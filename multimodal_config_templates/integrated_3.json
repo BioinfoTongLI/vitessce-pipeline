@@ -1,0 +1,707 @@
+{
+	"version": "1.0.15",
+	"name": "Integrated scRNA-seq & ISS & Visium",
+	"description": "",
+	"datasets": [
+		{
+			"uid": "iss",
+			"name": "iss",
+			"files": [
+				{
+					"type": "raster",
+					"fileType": "raster.json",
+					"coordinationValues": {
+						"obsType": "cell",
+						"featureType": "combined"
+					},
+					"options": {
+						"renderLayers": [
+							"iss-raw",
+							"iss-label"
+						],
+						"schemaVersion": "0.0.2",
+						"images": [
+							{
+								"name": "iss-raw",
+								"url": "",
+								"type": "zarr",
+								"metadata": {
+									"isBitmask": false,
+									"dimensions": [
+										{
+											"field": "t",
+											"type": "quantitative",
+											"values": null
+										},
+										{
+											"field": "channel",
+											"type": "nominal",
+											"values": [
+												"c01 dapi"
+											]
+										},
+										{
+											"field": "y",
+											"type": "quantitative",
+											"values": null
+										},
+										{
+											"field": "x",
+											"type": "quantitative",
+											"values": null
+										}
+									],
+									"isPyramid": true,
+									"transform": {
+										"translate": {
+											"y": 0,
+											"x": 0
+										},
+										"scale": 1
+									}
+								}
+							},
+							{
+								"name": "iss-label",
+								"url": "",
+								"type": "zarr",
+								"metadata": {
+									"isBitmask": true,
+									"dimensions": [
+										{
+											"field": "t",
+											"type": "quantitative",
+											"values": null
+										},
+										{
+											"field": "channel",
+											"type": "nominal",
+											"values": [
+												"Labels"
+											]
+										},
+										{
+											"field": "y",
+											"type": "quantitative",
+											"values": null
+										},
+										{
+											"field": "x",
+											"type": "quantitative",
+											"values": null
+										}
+									],
+									"isPyramid": true,
+									"transform": {
+										"translate": {
+											"y": 0,
+											"x": 0
+										},
+										"scale": 1
+									}
+								}
+							}
+						]
+					}
+				},
+				{
+					"fileType": "obsFeatureMatrix.anndata.zarr",
+					"url": "",
+					"coordinationValues": {
+						"obsType": "cell",
+						"featureType": "combined",
+						"featureValueType": "expression"
+					},
+					"options": {
+						"path": "X"
+					}
+				},
+				{
+					"fileType": "obsFeatureMatrix.anndata.zarr",
+					"url": "",
+					"coordinationValues": {
+						"obsType": "cell",
+						"featureType": "gene",
+						"featureValueType": "expression"
+					},
+					"options": {
+						"path": "X",
+						"featureFilterPath": "var/is_gene"
+					}
+				},
+				{
+					"fileType": "obsFeatureMatrix.anndata.zarr",
+					"url": "",
+					"coordinationValues": {
+						"obsType": "cell",
+						"featureType": "celltype",
+						"featureValueType": "abundance"
+					},
+					"options": {
+						"path": "X",
+						"featureFilterPath": "var/is_celltype"
+					}
+				},
+				{
+					"fileType": "obsLocations.anndata.zarr",
+					"url": "",
+					"coordinationValues": {
+						"obsType": "cell"
+					},
+					"options": {
+						"path": "obsm/spatial"
+					}
+				},
+				{
+					"fileType": "obsSets.anndata.zarr",
+					"url": "",
+					"coordinationValues": {
+						"obsType": "cell"
+					},
+					"options": [{
+						"name": "CellType",
+						"path": "obs/celltype"
+					}]
+				}
+			]
+		},
+		{
+			"uid": "visium",
+			"name": "visium",
+			"files": [
+				{
+					"type": "raster",
+					"fileType": "raster.json",
+					"coordinationValues": {
+						"obsType": "spot",
+						"featureType": "combined"
+					},
+					"options": {
+						"renderLayers": [
+							"visium-raw",
+							"visium-label"
+						],
+						"schemaVersion": "0.0.2",
+						"images": [
+							{
+								"name": "visium-raw",
+								"url": "",
+								"type": "zarr",
+								"metadata": {
+									"isBitmask": false,
+									"dimensions": [
+										{
+											"field": "t",
+											"type": "quantitative",
+											"values": null
+										},
+										{
+											"field": "channel",
+											"type": "nominal",
+											"values": [
+												"Channel 0"
+											]
+										},
+										{
+											"field": "y",
+											"type": "quantitative",
+											"values": null
+										},
+										{
+											"field": "x",
+											"type": "quantitative",
+											"values": null
+										}
+									],
+									"isPyramid": true,
+									"transform": {
+										"translate": {
+											"y": 0,
+											"x": 0
+										},
+										"scale": 1
+									}
+								}
+							},
+							{
+								"name": "visium-label",
+								"url": "",
+								"type": "zarr",
+								"metadata": {
+									"isBitmask": true,
+									"dimensions": [
+										{
+											"field": "t",
+											"type": "quantitative",
+											"values": null
+										},
+										{
+											"field": "channel",
+											"type": "nominal",
+											"values": [
+												"Labels"
+											]
+										},
+										{
+											"field": "y",
+											"type": "quantitative",
+											"values": null
+										},
+										{
+											"field": "x",
+											"type": "quantitative",
+											"values": null
+										}
+									],
+									"isPyramid": true,
+									"transform": {
+										"translate": {
+											"y": 0,
+											"x": 0
+										},
+										"scale": 1
+									}
+								}
+							}
+						]
+					}
+				},
+				{
+					"fileType": "obsFeatureMatrix.anndata.zarr",
+					"url": "",
+					"coordinationValues": {
+						"obsType": "spot",
+						"featureType": "combined",
+						"featureValueType": "expression"
+					},
+					"options": {
+						"path": "X"
+					}
+				},
+				{
+					"fileType": "obsFeatureMatrix.anndata.zarr",
+					"url": "",
+					"coordinationValues": {
+						"obsType": "spot",
+						"featureType": "gene",
+						"featureValueType": "expression"
+					},
+					"options": {
+						"path": "X",
+						"featureFilterPath": "var/is_gene"
+					}
+				},
+				{
+					"fileType": "obsFeatureMatrix.anndata.zarr",
+					"url": "",
+					"coordinationValues": {
+						"obsType": "spot",
+						"featureType": "celltype",
+						"featureValueType": "abundance"
+					},
+					"options": {
+						"path": "X",
+						"featureFilterPath": "var/is_celltype"
+					}
+				},
+				{
+					"fileType": "obsLocations.anndata.zarr",
+					"url": "",
+					"coordinationValues": {
+						"obsType": "spot"
+					},
+					"options": {
+						"path": "obsm/spatial"
+					}
+				}
+			]
+		},
+        {
+            "uid": "scrnaseq",
+			"name": "scrnaseq",
+			"files": [
+				{
+					"fileType": "obsFeatureMatrix.anndata.zarr",
+					"url": "",
+					"coordinationValues": {
+						"obsType": "cell",
+						"featureType": "combined",
+						"featureValueType": "expression"
+					},
+					"options": {
+						"path": "X"
+					}
+				},
+				{
+					"fileType": "obsFeatureMatrix.anndata.zarr",
+					"url": "",
+					"coordinationValues": {
+						"obsType": "cell",
+						"featureType": "gene",
+						"featureValueType": "expression"
+					},
+					"options": {
+						"path": "X",
+						"featureFilterPath": "var/is_gene"
+					}
+				},
+				{
+					"fileType": "obsFeatureMatrix.anndata.zarr",
+					"url": "",
+					"coordinationValues": {
+						"obsType": "cell",
+						"featureType": "celltype",
+						"featureValueType": "abundance"
+					},
+					"options": {
+						"path": "X",
+						"featureFilterPath": "var/is_celltype"
+					}
+				},
+				{
+					"fileType": "obsEmbedding.anndata.zarr",
+					"url": "",
+					"coordinationValues": {
+						"obsType": "cell",
+						"embeddingType": "X_UMAP"
+					},
+					"options": {
+						"path": "obsm/X_umap"
+					}
+				},
+				{
+					"fileType": "obsSets.anndata.zarr",
+					"url": "",
+					"coordinationValues": {
+						"obsType": "cell"
+					},
+					"options": [{
+						"name": "CellType",
+						"path": "obs/celltype"
+					}]
+				}
+            ]
+        }
+	],
+	"coordinationSpace": {
+		"dataset": {
+			"A": "iss",
+			"B": "visium",
+			"C": "scrnaseq"
+		},
+		"obsType": {
+			"A": "cell",
+			"B": "spot"
+		},
+		"featureType": {
+			"A": "combined",
+			"B": "gene",
+			"C": "celltype"
+		},
+		"featureValueType": {
+			"A": "expression",
+			"B": "abundance"
+		},
+		"embeddingType": {
+			"X_UMAP": "X_UMAP"
+		},
+		"spatialZoom": {
+			"A": null,
+			"B": -3.6
+		},
+		"spatialTargetX": {
+			"A": null,
+			"B": 11300
+		},
+		"spatialTargetY": {
+			"A": null,
+			"B": 12700
+		},
+		"spatialImageLayer": {
+			"A": [
+				{
+					"type": "raster",
+					"index": 0,
+					"visible": false,
+					"colormap": null,
+					"opacity": 1,
+					"domainType": "Min/Max",
+					"transparentColor": null,
+					"renderingMode": "Additive",
+					"use3d": false,
+					"channels": [
+						{
+							"selection": {
+								"channel": 0,
+								"t": 0
+							},
+							"color": [
+								0,
+								0,
+								255
+							],
+							"visible": true,
+							"slider": [
+								107,
+								2128
+							]
+						},
+						{
+							"selection": {
+								"channel": 1,
+								"t": 0
+							},
+							"color": [
+								0,
+								255,
+								0
+							],
+							"visible": true,
+							"slider": [
+								113,
+								39193
+							]
+						},
+						{
+							"selection": {
+								"channel": 2,
+								"t": 0
+							},
+							"color": [
+								255,
+								0,
+								255
+							],
+							"visible": true,
+							"slider": [
+								111,
+								274
+							]
+						},
+						{
+							"selection": {
+								"channel": 3,
+								"t": 0
+							},
+							"color": [
+								255,
+								255,
+								0
+							],
+							"visible": true,
+							"slider": [
+								108,
+								179
+							]
+						}
+					]
+				}
+			],
+			"B": null
+		},
+		"spatialSegmentationLayer": {
+			"A": null,
+			"B": null
+		},
+		"featureValueColormapRange": {
+			"A": [0, 1.0],
+			"B": [0, 1.0],
+			"C": [0, 1.0]
+		},
+		"obsSetColor": {
+			"A": [
+				{"path": ["CellType", "AER-Basal"], "color": [1,215,95] },
+				{"path": ["CellType", "ChondroProg"], "color": [192,0,6] },
+				{"path": ["CellType", "DermFibro"], "color": [167,67,244] },
+				{"path": ["CellType", "RestingChon"], "color": [255,246,69] },
+				{"path": ["CellType", "PAX3+MyoProg"], "color": [0,98,113] },
+				{"path": ["CellType", "VenousEndo"], "color": [1,81,231] },
+
+				{"path": ["CellType", "ADH+Fibro"], "color": [255,245,225] },
+				{"path": ["CellType", "ArterialEndo"], "color": [162,255,205] },
+				{"path": ["CellType", "ArtiChon"], "color": [32,93,67] },
+				{"path": ["CellType", "B"], "color": [82,80,104] },
+				{"path": ["CellType", "Basal"], "color": [46,111,0] },
+				{"path": ["CellType", "DC2"], "color": [214,228,255] },
+				{"path": ["CellType", "DefErythro"], "color": [166,255,124] },
+				{"path": ["CellType", "DefReticulo"], "color": [137,53,85] },
+				{"path": ["CellType", "DistalMes"], "color": [121,255,101] },
+				{"path": ["CellType", "F10+DermFibroProg"], "color": [0,100,99] },
+				{"path": ["CellType", "HOXC5+DermFibroProg"], "color": [255,170,78] },
+				{"path": ["CellType", "ISL1+Mes"], "color": [196,0,56] },
+				{"path": ["CellType", "InterMusFibro"], "color": [0,117,69] },
+				{"path": ["CellType", "InterZone"], "color": [129,26,175] },
+				{"path": ["CellType", "LMPP/ELP"], "color": [255,254,206] },
+				{"path": ["CellType", "LymphEndo"], "color": [1,86,193] },
+				{"path": ["CellType", "MFAP5+Fibro"], "color": [250,255,187] },
+				{"path": ["CellType", "MYH3+MyoC"], "color": [255,252,166] },
+				{"path": ["CellType", "MYL3+MyoC"], "color": [129,49,131] },
+				{"path": ["CellType", "Macro"], "color": [2,167,100] },
+				{"path": ["CellType", "Megakaryo"], "color": [88,255,167] },
+				{"path": ["CellType", "Mes1"], "color": [0,98,15] },
+				{"path": ["CellType", "Mes2"], "color": [255,95,133] },
+				{"path": ["CellType", "Mes3"], "color": [1,193,225] },
+				{"path": ["CellType", "Mes4"], "color": [150,44,63] },
+				{"path": ["CellType", "MesCond"], "color": [255,208,227] },
+				{"path": ["CellType", "Monocyte"], "color": [123,66,68] },
+				{"path": ["CellType", "MyoB1"], "color": [72,190,0] },
+				{"path": ["CellType", "MyoB2"], "color": [255,182,167] },
+				{"path": ["CellType", "MyoC1"], "color": [2,126,249] },
+				{"path": ["CellType", "MyoC2"], "color": [255,235,166] },
+				{"path": ["CellType", "NeuralFibro"], "color": [234,0,166] },
+				{"path": ["CellType", "OCP"], "color": [26,94,56] },
+				{"path": ["CellType", "OsteoB"], "color": [255,124,235] },
+				{"path": ["CellType", "PAX7+MyoProg"], "color": [239,255,134] },
+				{"path": ["CellType", "PeriChon"], "color": [73,200,255] },
+				{"path": ["CellType", "Pericyte"], "color": [134,62,6] },
+				{"path": ["CellType", "Periderm"], "color": [157,255,221] },
+				{"path": ["CellType", "Perimysium"], "color": [157,37,19] },
+				{"path": ["CellType", "PrehyperChon"], "color": [1,135,105] },
+				{"path": ["CellType", "PrimErythro1"], "color": [179,94,0] },
+				{"path": ["CellType", "PrimErythro2"], "color": [1,170,151] },
+				{"path": ["CellType", "ProlifChon"], "color": [255,135,118] },
+				{"path": ["CellType", "ProxMes"], "color": [84,238,255] },
+				{"path": ["CellType", "RDH10+DistalMes"], "color": [133,61,49] },
+				{"path": ["CellType", "SMC"], "color": [190,139,255] },
+				{"path": ["CellType", "SMProg"], "color": [97,81,41] },
+				{"path": ["CellType", "STMN2+Fibro"], "color": [255,83,200] },
+				{"path": ["CellType", "Schwann"], "color": [142,134,0] },
+				{"path": ["CellType", "SchwannProg"], "color": [255,137,211] },
+				{"path": ["CellType", "SynapSchwann"], "color": [156,175,0] },
+				{"path": ["CellType", "Teno"], "color": [109,77,22] },
+				{"path": ["CellType", "TenoProg"], "color": [151,255,183] },
+				{"path": ["CellType", "TransMes"], "color": [255,185,126] }
+			]
+		},
+		"obsSetSelection": {
+			"A": [
+				["CellType", "AER-Basal"],
+				["CellType", "ChondroProg"],
+				["CellType", "DermFibro"],
+				["CellType", "RestingChon"],
+				["CellType", "PAX3+MyoProg"],
+				["CellType", "VenousEndo"]
+			]
+		}
+	},
+	"layout": [
+		{
+			"component": "scatterplot",
+			"coordinationScopes": {
+				"dataset": "C",
+				"embeddingType": "X_UMAP",
+				"obsType": "A",
+				"featureType": "A",
+				"featureValueColormapRange": "C",
+				"obsSetColor": "A",
+				"obsSetSelection": "A"
+			},
+			"x": 0,
+			"y": 0,
+			"w": 4,
+			"h": 12
+		},
+		{
+			"component": "spatial",
+			"coordinationScopes": {
+				"dataset": "A",
+				"obsType": "A",
+				"featureType": "A",
+				"spatialImageLayer": "A",
+				"spatialSegmentationLayer": "A",
+				"spatialTargetX": "A",
+				"spatialTargetY": "A",
+				"spatialZoom": "A",
+				"featureValueColormapRange": "A",
+				"obsSetColor": "A",
+				"obsSetSelection": "A"
+			},
+			"x": 4,
+			"y": 0,
+			"w": 3,
+			"h": 9
+		},
+		{
+			"component": "layerController",
+			"coordinationScopes": {
+				"dataset": "A",
+				"obsType": "A",
+				"spatialImageLayer": "A",
+				"spatialSegmentationLayer": "A"
+			},
+			"x": 4,
+			"y": 9,
+			"w": 3,
+			"h": 3
+		},
+		{
+			"component": "spatial",
+			"coordinationScopes": {
+				"dataset": "B",
+				"obsType": "B",
+				"featureType": "A",
+				"spatialImageLayer": "B",
+				"spatialSegmentationLayer": "B",
+				"spatialTargetX": "B",
+				"spatialTargetY": "B",
+				"spatialZoom": "B",
+				"featureValueColormapRange": "B",
+				"obsSetColor": "A",
+				"obsSetSelection": "A"
+			},
+			"x": 7,
+			"y": 0,
+			"w": 3,
+			"h": 9
+		},
+		{
+			"component": "layerController",
+			"coordinationScopes": {
+				"dataset": "B",
+				"obsType": "B",
+				"spatialImageLayer": "B",
+				"spatialSegmentationLayer": "B"
+			},
+			"x": 7,
+			"y": 9,
+			"w": 3,
+			"h": 3
+		},
+		{
+			"component": "obsSets",
+			"coordinationScopes": {
+				"obsSetColor": "A",
+				"obsSetSelection": "A"
+			},
+			"x": 10,
+			"y": 0,
+			"w": 2,
+			"h": 4
+		},
+		{
+			"component": "featureList",
+			"coordinationScopes": {
+				"dataset": "A",
+				"featureType": "B",
+				"featureValueType": "A"
+			},
+			"x": 10,
+			"y": 8,
+			"w": 2,
+			"h": 4
+		},
+		{
+			"component": "featureList",
+			"coordinationScopes": {
+				"dataset": "A",
+				"featureType": "C",
+				"featureValueType": "B"
+			},
+			"x": 10,
+			"y": 4,
+			"w": 2,
+			"h": 4
+		}
+	],
+	"initStrategy": "auto"
+}
