@@ -2,7 +2,7 @@
 """
 process_h5ad.py
 ====================================
-Processes H5AD files
+Processes H5AD files into AnnData-Zarr
 """
 
 from __future__ import annotations
@@ -17,17 +17,15 @@ import zarr
 import logging
 import warnings
 from scipy.sparse import spmatrix, csr_matrix, csc_matrix
+from constants import ANNDATA_ZARR_SUFFIX
 
 warnings.filterwarnings("ignore")
 logging.getLogger().setLevel(logging.INFO)
-
-SUFFIX = "anndata.zarr"
 
 
 def h5ad_to_zarr(
     path: str = None,
     stem: str = "",
-    out_filename: str = None,
     adata: ad.AnnData = None,
     chunk_size: int = 10,
     batch_processing: bool = False,
@@ -42,7 +40,6 @@ def h5ad_to_zarr(
     Args:
         path (str, optional): Path to the h5ad file. Defaults to None.
         stem (str, optional): Prefix for the output file. Defaults to "".
-        out_filename (str, optional): Output file name without extension. Supersedes `stem`. Defaults to None.
         adata (AnnData, optional): AnnData object to process. Supersedes `path`.
             Defaults to None.
         chunk_size (int, optional): Output Zarr column chunk size. Defaults to 10.
@@ -80,11 +77,7 @@ def h5ad_to_zarr(
 
     adata = preprocess_anndata(adata, **kwargs)
 
-    zarr_file = (
-        f"{out_filename}.zarr"
-        if out_filename and len(out_filename)
-        else f"{stem}-{SUFFIX}"
-    )
+    zarr_file = f"{stem}-{ANNDATA_ZARR_SUFFIX}"
 
     if not batch_processing:
         # matrix sparse to dense
@@ -114,7 +107,7 @@ def h5ad_to_zarr(
             else:
                 logging.info("Batch processing dense matrix...")
                 batch_process_array(path, zarr_file, m, n, batch_size, chunk_size)
-    
+
     if consolidate_metadata:
         zarr.consolidate_metadata(zarr_file)
 
@@ -182,9 +175,9 @@ def preprocess_anndata(
 
     # compute embeddings if not already stored in object
     if compute_embeddings:
-        if not "X_pca" in adata.obsm:
+        if "X_pca" not in adata.obsm:
             sc.tl.pca(adata)
-        if not "X_umap" in adata.obsm:
+        if "X_umap" not in adata.obsm:
             sc.pp.neighbors(adata)
             sc.tl.umap(adata)
 
