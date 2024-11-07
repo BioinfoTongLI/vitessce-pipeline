@@ -16,11 +16,13 @@ pipeline through the command line.
 - The ``Process_files`` workflow handles data files and their conversions.
 - The ``Process_images`` workflow handles image files and/or label image data and their conversions.
 
-Configurations and data are input through a :ref:`parameters yaml file <parameters_file>`.
+The pipeline configuration and the location of input data is specified through the 
+:ref:`parameters yaml file <parameters_file>`. This file is passed to Nextflow when
+running the pipeline. 
 
 To run the ``Full_pipeline`` use
 
-.. code-block:: sh
+.. code-block:: shell
 
    nextflow run main.nf -params-file /path/to/params.yaml -entry Full_pipeline
 
@@ -31,10 +33,49 @@ defined.
 You can modify the entry point if you're interested in only getting the converted outputs.
 Use ``-entry Process_files`` or ``-entry Process_images`` as you need.
 
+Running using Conda 
+-------------------
+
+The default pipeline will run on local executor without any type of environment creation. To run the pipeline using conda environments use the ``-profile conda`` option:
+
+.. code-block:: shell
+
+   nextflow run main.nf \
+            -params-file /path/to/params.yaml \
+            -entry Full_pipeline \
+            -profile conda
+
+Creating the environment when the pipeline is launched may take a few minutes.
+
+Running using Docker 
+--------------------
+
+The default pipeline will run on local executor without any type of environment creation. To run the pipeline using Docker containers use the ``-profile docker`` option:
+
+.. code-block:: shell
+
+   nextflow run main.nf \
+            -params-file /path/to/params.yaml \
+            -entry Full_pipeline \
+            -profile docker
+
+Pulling the containers when the pipline is launched may take a few minutes.
+
+Running using Singularity 
+-------------------------
+
+The default pipeline will run on local executor without any type of environment creation. To run the pipeline using Singularity containers use the ``-profile singularity`` option:
+
+.. code-block:: shell
+
+   nextflow run main.nf \
+            -params-file /path/to/params.yaml \
+            -entry Full_pipeline \
+            -profile singularity
+
+Pulling the containers when the pipline is launched may take a few minutes.
+
 Further reading
 ---------------
 
-Docker image pulling/local conda env creation are handled by Nextflow.
-Please refer to
-`this <https://www.nextflow.io/docs/latest/getstarted.html>`__ for
-detailed information.
+For more information about Docker image pulling/local conda env creation in Nextflow please refer to Nextflow's official docs for `containers <https://www.nextflow.io/docs/latest/container.html>`__ and `conda <https://www.nextflow.io/docs/latest/conda.html>`__.

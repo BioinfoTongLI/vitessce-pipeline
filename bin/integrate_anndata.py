@@ -1,28 +1,33 @@
 #!/usr/bin/env python3
 
 from typing import Union
+import typing as T
 import os
 import fire
 import zarr
 import h5py
+import logging
 import numpy as np
 import pandas as pd
 import anndata as ad
 from scipy.sparse import spmatrix, hstack, csr_matrix, csc_matrix
 from process_h5ad import h5ad_to_zarr
+from pathlib import Path
 
 
-def reindex_and_concat(path: str, offset: int, features: str, **kwargs):
-
+def reindex_and_concat(
+    path: str, offset: int, features: str = None, args: dict[str, T.Any] = {}, **kwargs
+):
     adata = read_anndata(path)
 
-    adata = reindex_anndata(adata, offset, no_save=True)
-    adata = concat_features(adata, features, no_save=True)
+    adata = reindex_anndata(adata, offset, **args, **kwargs)
+    if features:
+        adata = concat_features(adata, features, **args, **kwargs)
 
     out_filename = "reindexed-concat-{}".format(
         os.path.splitext(os.path.basename(path))[0]
     )
-    write_anndata(adata, out_filename, **kwargs)
+    write_anndata(adata, out_filename, **args, **kwargs)
 
     return
 
@@ -30,11 +35,10 @@ def reindex_and_concat(path: str, offset: int, features: str, **kwargs):
 def reindex_anndata(
     data: Union[ad.AnnData, str],
     offset: int,
-    no_save: bool = False,
+    no_save: bool = True,
     out_filename: str = None,
     **kwargs,
 ):
-
     if isinstance(data, ad.AnnData):
         adata = data
     else:
@@ -55,11 +59,10 @@ def reindex_anndata(
 def concat_features(
     data: Union[ad.AnnData, str],
     features: str,
-    no_save: bool = False,
+    no_save: bool = True,
     out_filename: str = None,
     **kwargs,
 ):
-
     if isinstance(data, ad.AnnData):
         adata = data
     else:
@@ -69,9 +72,11 @@ def concat_features(
         )
 
     if features.endswith(".h5ad") and os.path.isfile(features):
-        adata = concat_matrix_from_cell2location(adata, features)
-    else:
-        adata = concat_matrix_from_obs(adata, features)
+        adata = concat_matrix_from_cell2location(adata, features, **kwargs)
+    elif features.startswith("obs/"):
+        adata = concat_matrix_from_obs(adata, features.split("/")[1], **kwargs)
+    elif features.startswith("obsm/"):
+        adata = concat_matrix_from_obsm(adata, features.split("/")[1], **kwargs)
 
     if no_save:
         return adata
@@ -80,9 +85,8 @@ def concat_features(
         return
 
 
-def intersect_features(paths: list[str], **kwargs):
-
-    var_intersect = get_feature_intersection(paths)
+def intersect_features(*paths, **kwargs):
+    var_intersect = get_feature_intersection(*paths)
 
     for path in paths:
         adata = read_anndata(path)
@@ -114,15 +118,34 @@ def concat_matrix_from_obs(
     return concat_matrices(adata, ext_matrix, obs, feature_name, obs_feature_name)
 
 
+def concat_matrix_from_obsm(
+    data: Union[ad.AnnData, str],
+    obsm: str = "celltype",
+    feature_name: str = "gene",
+    obsm_feature_name: str = None,
+):
+    if isinstance(data, ad.AnnData):
+        adata = data
+    else:
+        adata = read_anndata(data)
+
+    return concat_matrices(
+        adata, adata.obsm[obsm], "celltype", feature_name, obsm_feature_name
+    )
+
+
 def concat_matrix_from_cell2location(
     data: Union[ad.AnnData, str],
     c2l_file: str,
     q: str = "q05_cell_abundance_w_sf",
-    sample: str = None,
+    sample: tuple[str, str] = None,
     feature_name: str = "gene",
     obs_feature_name: str = None,
+    sort: bool = True,
+    sort_index: str = None,
+    **kwargs,
 ):
-
+    sort = sort or sort_index is not None
     if isinstance(data, ad.AnnData):
         adata = data
     else:
@@ -138,6 +161,38 @@ def concat_matrix_from_cell2location(
     if sample:
         c2l_adata = c2l_adata[c2l_adata.obs[sample[0]] == sample[1]]
 
+    if sort:
+        if not sort_index and adata.uns.get("webatlas_reindexed"):
+            sort_index = "label_id"
+        if sort_index:
+            data_idx = adata.obs[sort_index]
+        else:
+            data_idx = adata.obs.index
+        idx = c2l_adata.obs.index.get_indexer(data_idx.tolist())
+        if -1 in idx:  # Indices do not match
+            logging.error(
+                "Values do not match between AnnData object's"
+                f" `{sort_index or 'index'}`"
+                " and cell2location output index."
+            )
+
+            logging.info("Attempting to match indices as substrings")
+            try:
+                data_idx = match_substring_indices(c2l_adata.obs.index, data_idx)
+                if not data_idx.is_unique:
+                    raise Exception(
+                        "Found non-unique matches between indices as substrings."
+                    )
+                idx = c2l_adata.obs.index.get_indexer(data_idx.tolist())
+                if -1 in idx:
+                    raise Exception("Non-matching indices present.")
+            except Exception:
+                raise SystemError(
+                    "Failed to find a match between indices as substrings."
+                )
+
+        c2l_adata = c2l_adata[idx,]
+
     c2l_df = pd.DataFrame(
         c2l_adata.obsm[q].to_numpy(),
         index=c2l_adata.obs.index,
@@ -147,7 +202,9 @@ def concat_matrix_from_cell2location(
         dtype="float32",
     )
 
-    return concat_matrices(adata, c2l_df, "celltype", feature_name, obs_feature_name)
+    return concat_matrices(
+        adata, c2l_df, "celltype", feature_name, obs_feature_name, **kwargs
+    )
 
 
 def concat_matrices(
@@ -157,7 +214,6 @@ def concat_matrices(
     feature_name: str = "gene",
     obs_feature_name: str = None,
 ):
-
     assert adata.shape[0] == ext_df.shape[0]
 
     obs_feature_name = obs_feature_name or obs
@@ -215,14 +271,14 @@ def concat_matrices(
     return adata_concat
 
 
-def get_feature_intersection(paths: list[str]):
-
+def get_feature_intersection(*paths):
     var_indices = []
     for path in paths:
-        is_zarr = os.path.splitext(path)[-1] == ".zarr"
+        is_zarr = path.split(".")[-1] == "zarr"
         if is_zarr:
-            z = zarr.open(path)
-            var_indices.append(pd.Index(z.var._index[:]).to_series())
+            z = zarr.open(path, "r")
+            var_idx = z.var.attrs["_index"] if "_index" in z.var.attrs else "_index"
+            var_indices.append(pd.Index(z.var[var_idx][:]).to_series())
         else:
             with h5py.File(path, "r") as f:
                 var_indices.append(ad._io.h5ad.read_elem(f["var"]).index.to_series())
@@ -250,9 +306,15 @@ def write_anndata(
     if save_h5ad:
         adata.write_h5ad(f"{out_filename}.h5ad")
 
-    h5ad_to_zarr(adata=adata, out_filename=out_filename, **kwargs)
+    h5ad_to_zarr(adata=adata, stem=Path(out_filename).stem, **kwargs)
 
     return
+
+
+def match_substring_indices(fullstring_idx, substring_idx):
+    return pd.Series(substring_idx).apply(
+        lambda x: fullstring_idx[fullstring_idx.str.contains(x)].values[0]
+    )
 
 
 if __name__ == "__main__":
